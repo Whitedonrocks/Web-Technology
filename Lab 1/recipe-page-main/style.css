@@ -1,0 +1,49 @@
+/* Normalize CSS */
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    text-decoration: none;
+}
+body{
+    background-color: hsl(30, 54%, 90%);
+    font-family: "Outfit",sans-serif;
+}
+img{
+    width: 100%;
+}
+h1,h2,h3,h4,h5{
+    font-family: "Young Serif",serif;
+}
+h2{
+    color: hsl(14,45%,36%);
+}
+li{
+    margin-bottom: 10px;;
+}
+.container{
+    background-color: #fff;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 200px;
+    padding: 40px;
+    border-radius: 25px;
+}
+.recipe-img{
+    border-radius: 25px;
+    overflow: hidden;
+}
+.preparation-time{
+    background-color:hsl(330, 100%, 98%) ;
+    padding: 15px;
+    padding-left: 30px;
+}
+.preparation-time h4{
+    font-size: 20px;
+    font-family: "Outfit",sans-serif;
+    color: hsl(332, 51%, 32%);
+}
