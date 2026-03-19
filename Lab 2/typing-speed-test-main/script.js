@@ -1,6 +1,7 @@
-// Setup Typing Content
+// setup typing test
 
-const content={
+const content=
+    {
   "easy": [
     {
       "id": "easy-1",
@@ -129,105 +130,114 @@ const content={
   ]
 };
 
-// Setup Elements
-const statWpm=document.getElementById("stat_wpm");
-const statAccuracy=document.getElementById("stat_accuracy");
-const statTime=document.getElementById("stat_time");
-const textsEmement=document.getElementById("texts");
-const starterElement=document.getElementById("starter");
-const startBtnElement=document.getElementById("startBtn");
-const hiddenInputElement=document.getElementById("hidden-input");
 
-// Setup State
-let wpm =0;
+// setup elements
+const statWpm = document.getElementById("stat_wpm");
+const statAccuracy = document.getElementById("stat_accuracy");
+const statTime = document.getElementById("stat_time");
+const textsElement = document.getElementById("texts");
+const starterElement = document.getElementById("starter");
+const startBtnElement = document.getElementById("startBtn");
+const hiddenInputElement = document.getElementById("hidden-input");
+
+// setup state
+
+let wpm = 0;
 let started = false;
 let completed = false;
 let time = null;
 let difficulty = "easy";
 let currentContent="";
-let currentIndex=0;
-let correctCount=0;
-let incorrectCount=0;
-let accuracy=0;
-let startTime=null;
+let currentIndex = 0;
+let correctCount = 0;
+let incorrectCount = 0;
+let accuracy = 0;
+let startTime = null;
 
-function setupContent(){
-    let diffultyContents=content[difficulty];
-    let randomINdex=Math.floor(Math.random()*diffultyContents.length);
-    currentContent=diffultyContents[randomINdex];
+function setupContent() {
+    let difficultyContents = content[difficulty];
+    let randomIndex = Math.floor(Math.random() * difficultyContents.length);
+    currentContent = difficultyContents[randomIndex];
 
-    textsEmement.innerText=currentContent.text;
-    textsEmement.classList.add("blurred"); 
-
+    textsElement.innerText = currentContent.text;
+    textsElement.classList.add("blurred");
 }
 
 function renderText(){
-    let spanHtml="";
-    for(let i=0;i<currentContent.text.length;i++){
-        let className="";
-        if(i<currentIndex){
-            if(currentContent.text[i]==hiddenInputElement.value[i]){
-              className="correct";
-            }
-          else{
-              className="incorrect";
-            }
+    let spanHtml = "";
+    for (let i = 0; i < currentContent.text.length; i++) {
+        let className = "";
+        console.log(hiddenInputElement.value, currentContent.text[i], i);
+        if (i < currentIndex) {
+          if (currentContent.text[i] == hiddenInputElement.value[i]) {
+              className = "correct";
+
+          }else{
+              className = "incorrect";
+          }
         }
-        if(i==currentIndex){
-            className="current";
+
+        if (i === currentIndex) {
+          className = "current";
         }
-        spanHtml +=`<span class="${className}">${currentContent.text[i]}</span>`;
+        spanHtml += `<span class="${className}">${currentContent.text[i]}</span>`;
     }
-    textsEmement.innerHTML=spanHtml;
+    textsElement.innerHTML = spanHtml;
+
 }
 
 function updateStats(){
-  let wpm=0;
-  const elapsed = (Date.now()-startTime)/1000/60;
-  if(elapsed>0){
-    wpm= Math.ceil(correctCount/5/elapsed);
+  let wpm = 0;
+  const elapsed = (Date.now() - startTime) / 1000 / 60;
+  if (elapsed > 0) {
+    wpm = Math.round((correctCount / 5) / elapsed);
   }
-  statWpm.textContent=wpm;
-  let totalTyped=correctCount+incorrectCount;
-  accuracy=Math.round((correctCount/totalTyped)*100);
-  statAccuracy.textContent=accuracy;
+
+  statWpm.innerText = wpm;
+
+  let totalTyped = correctCount + incorrectCount;
+  accuracy = Math.round((correctCount / totalTyped) * 100)
+
+  statAccuracy.textContent= accuracy;  
+
 }
 
 
+// initialization
 
-// Initilization
-function init(){
+function init() {
     setupContent();
-    startBtnElement.addEventListener("click",function(){
-        startTime=Date.now();
-        // Remove Blur of Text
-        textsEmement.classList.remove("blurred");
+    startBtnElement.addEventListener("click", function(){
+        startTime = Date.now();
+        // remove blur of text
+        textsElement.classList.remove("blurred");
 
-        // Remove Starter
+        //hide starter
         starterElement.classList.add("hidden");
-
 
         renderText();
 
         hiddenInputElement.focus();
 
-        hiddenInputElement.addEventListener("input",function(event){
-            const typedText=event.target.value;
+        hiddenInputElement.addEventListener("input", function(event){
+          const typedText = event.target.value;
 
-            currentIndex=typedText.length;
+          currentIndex = typedText.length;
 
-            for(let i=0;i<typedText;i++){
-                if(currentContent.text[i]==typedText[i]){
-                    correctCount++;
-                }
-                else{
-                    incorrectCount++;
-                }
-            } 
-            renderText();
-            updateStats();
+          correctCount = 0;
+          incorrectCount = 0;
+          for (let i = 0; i < typedText.length; i++) {
+            if (typedText[i] == currentContent.text[i]) {
+              correctCount++;
+            } else {
+              incorrectCount++;
+            }
+          }
+
+          renderText();
+          updateStats();
+
         })
     })
 }
-
 init();
