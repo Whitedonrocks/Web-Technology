@@ -3,86 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Simple Banking System</title>
 </head>
 <body>
+        <?php
+
+        // You are building a simple banking system. Write a program that manages bank accounts for multiple customers using variables and function only.
+        //  Your program must support the following :
+        // 1. Store the name and balances for these 3 customers:
+        // - Alice with a balance of $1000
+        // - Bob with a balance of $500
+        // - Charlie with a balance of $0
+
+        // 2. Perform these operations in order:
+            // - Deposit $200 into Alice's account
+            // - Withdraw $100 from Bob's account
+            // - Withdraw $200 from Charlie's account (should print an error)
+            // - Transfer $300 from Alice's account to Charlie's account
     
-    <!-- Create an HTML page that uses PHP to print "Hello, World!" inside a tag. The page should hav a proper HTML structure and tags -->
-     <?php
-        echo "<h1>Hello, World!</h1>";
+        // 3. After all operations,print a summary of all accounts.
+
+
+        // $customers = [
+        //     "Alice" => 1000,
+        //     "Bob" => 500,
+        //     "Charlie" => 0
+        // ];
+    
+        // function deposit(&$customers, $name, $amount) {
+        //     if (isset($customers[$name])) {
+        //         $customers[$name] += $amount;
+        //         echo "Deposited $$amount into $name's account.<br>";
+        //     } else {
+        //         echo "Customer $name not found.<br>";
+        //     }
+        // }
+        // function withdraw(&$customers, $name, $amount) {
+        //     if (isset($customers[$name])) {
+        //         if ($customers[$name] >= $amount) {
+        //             $customers[$name] -= $amount;
+        //             echo "Withdrew $$amount from $name's account.<br>";
+        //         } else {
+        //             echo "Error: Insufficient funds in $name's account.<br>";
+        //         }
+        //     } else {
+        //         echo "Customer $name not found.<br>";
+        //     }
+        // }
+        // function transfer(&$customers, $from, $to, $amount) {
+        //     if (isset($customers[$from]) && isset($customers[$to])) {
+        //         if ($customers[$from] >= $amount) {
+        //             $customers[$from] -= $amount;
+        //             $customers[$to] += $amount;
+        //             echo "Transferred $$amount from $from's account to $to's account.<br>";
+        //         } else {
+        //             echo "Error: Insufficient funds in $from's account.<br>";
+        //         }
+        //     } else {
+        //         echo "Customer $from or $to not found.<br>";
+        //     }
+        // }
+
+        // deposit($customers, "Alice", 200);
+        // withdraw($customers, "Bob", 100);
+        // withdraw($customers, "Charlie", 200);
+        // transfer($customers, "Alice", "Charlie", 300);
+
+
+        // echo "<h3>Account Summary:</h3>";
+        // foreach ($customers as $name => $balance) {
+        //     echo "$name: $$balance<br>";
+        // }
+
+
+interface Depositable {
+            public function deposit($amount);
+        }
+
+        class BankAccount implements Depositable{
+            private $name;
+            protected $balance;
+            protected $rate = 5;
+
+            public function __construct($name, $balance = 0){
+                $this->name = $name;
+                $this->balance = $balance;  
+            }
+
+            public function deposit($amount){
+                $this->balance += $amount;
+            }
+            public function withdraw($amount){
+                if ($this->balance >= $amount) {
+                    $this->balance -= $amount;
+                } else {
+                    echo "Insufficient funds for withdrawal from {$this->name}.<br>";
+                    return;
+                }
+            }
+            public function printStatement(){
+                echo "Account Statement for {$this->name}:<br>";
+                echo "Balance: {$this->balance}<br>";
+            }
+            public function transfer($toAccount, $amount){
+                if ($this->balance >= $amount) {
+                    $this->balance -= $amount;
+                    $toAccount->deposit($amount);
+                } else {
+                    echo "Insufficient funds for transfer.<br>";
+                }
+            }
+
+            public function calculateInterest($time){
+                return $this->balance * ($time * $this->rate) / 100;
+            }
+            
+        }
+
+        class FixedDepositAccount extends BankAccount{
+            public function __construct($name,$amount){
+                parent::__construct($name, $amount);
+                $this->rate = 7;
+            }
+
+            public function withdraw($amount){
+                throw new Exception("Withdrawals are not allowed from a Fixed Deposit Account.<br>");
+            }
+
+            public function deposit($amount){
+                $this->balance += $amount +10;
+            }
+
+        }
+
+        $aliceAccount = new BankAccount("Alice", 1000);
+        $bobAccount = new FixedDepositAccount("Bob", 500);
+        $charlieAccount = new BankAccount("Charlie", 0);
+
+        $aliceAccount -> printStatement();
+        $bobAccount -> printStatement();
+        $charlieAccount -> printStatement();
+        echo "<br>";
+
+        $aliceAccount -> deposit(200);
+        try {
+            $bobAccount -> withdraw(100);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+        $charlieAccount -> withdraw(200);
+        $aliceAccount -> transfer($charlieAccount, 300);
+        echo "<p> Interest for Alice's account after 1 year: " . $aliceAccount -> calculateInterest(1) . "</p>";
         echo "<br>";
 
 
-    // <!-- Declare five  variables of different types : a sring (name), an integer (age), a float (gpa), a boolean (isEnrolled) and null (graducated). Print each with a label using echo-->
-   
-        $name = "Alice"; // String
-        $age = 30; // Integer
-        $gpa = 3.8; // Float
-        $isEnrolled = true; // Boolean
-        $graduated = null; // Null
+        //update 500 in all account:
 
-        echo "Name: " . $name . "<br>";
-        echo "Age: " . $age . "<br>";
-        echo "GPA: " . $gpa . "<br>";
-        echo "Is Enrolled: " . ($isEnrolled ? "Yes" : "No") . "<br>";
-        echo "Graduated: " . ($graduated === null ? "Not Graduated" : "Graduated") . "<br>";
+        $amountToDeposit = 500;
+        $accounts = [$aliceAccount, $bobAccount, $charlieAccount];
+        foreach ($accounts as $account) {
+            $account -> deposit($amountToDeposit);
+        }   
 
-
-    // <!-- Declare $firstName ="Ada" and $lastName= "Lovelace" Concatenate them with a space in between to make a full name. Then append the sting "--Programmer" to the result and print it. -->
-  
-        $firstName = "Ada";
-        $lastName = "Lovelace";
-        $fullName = $firstName . " " . $lastName; // Concatenation
-        $fullName .= " --Programmer"; // Append
-        echo $fullName."<br>";
-
-
-    // <!-- Rewrite the previous problem using double quotes string interpolation instead of the . operator -->
-  
-        $firstName = "Ada";
-        $lastName = "Lovelace";
-        $fullName = "$firstName $lastName"; // String interpolation
-        $fullName .= " --Programmer"; // Append
-        echo $fullName."<br>";
-
-    // <!-- Given $csv="Alice,85,Maths;Bob,90,Science;Carol,78,English",split by semicolon to get rows then split each row by comma to get fileds Print each student's name and score -->
- 
-        $csv = "Alice,85,Maths;Bob,90,Science;Carol,78,English";
-        $rows = explode(";", $csv); // Split by semicolon
-        foreach ($rows as $row) {
-            $fields = explode(",", $row); // Split by comma
-            $name = $fields[0];
-            $score = $fields[1];
-            echo "Name: $name, Score: $score<br>";
-        }
-
-
-    // <!-- Start with $queue = ["Task1", "Task2", "Task3"]. Add "Task4" to the end of the array and add "Task0" to the beginning,remove the last item and remove the first item.Print the final array -->
- 
-        $queue = ["Task1", "Task2", "Task3"];
-        array_push($queue, "Task4"); // Add to end
-        array_unshift($queue, "Task0"); // Add to beginning
-        array_pop($queue); // Remove last item
-        array_shift($queue); // Remove first item
-        foreach ($queue as $task) {
-            echo $task . "<br>";
-        }
-
-    //  <!-- Write a recursive function factorial($n) that returns the factorial of a non-negative integer.It should handel the base case (0!=1) and call itself for the recursive case.Test ift for n=0.5 and 10.  -->
-
-        function factorial($n) {
-            if ($n < 0) {
-                return "Error: Input must be a non-negative integer.";
-            } elseif ($n == 0||$n == 1) {
-                return 1; // Base case
-            } else {
-                return $n * factorial($n - 1); // Recursive case
-            }
-        }
-
-        // Test the function
-        echo "Factorial of 0: " . factorial(0) . "<br>";
-        echo "Factorial of 10: " . factorial(10) . "<br>";
+        echo "Updated Account Summary:<br>";
+        $aliceAccount -> printStatement();
+        $bobAccount -> printStatement();
+        $charlieAccount -> printStatement();
     ?>
+
 </body>
 </html>
