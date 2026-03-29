@@ -1,12 +1,12 @@
 <?php
-
+    // require_once "Database.php";
+    require "connection.php";
     // handle post request
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
     
         $formData = $_POST;
 
 
-        $registredEmails = ['user1@example.com', 'user2@example.com'];
 
         $name = htmlspecialchars(trim($formData['fullname'] ?? ''));
         $email = trim($formData['email'] ?? '');
@@ -27,8 +27,16 @@
             $errors['email'] = 'Email is required';
         }else if($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false){
             $errors['email'] = 'Invalid email format';
-        }else if($email !== '' && in_array($email, $registredEmails)){
-            $errors['email'] = 'Email is already registered';
+        }else{
+            $userExistsSQL = "SELECT * FROM users WHERE email = ?";
+            $userExistsStmt = $connection->prepare($userExistsSQL);
+            $userExistsStmt->bind_param("s", $email);
+            $userExistsStmt->execute();
+            $result = $userExistsStmt->get_result();
+
+            if($result->num_rows > 0){
+                $errors['email'] = 'Email is already registered';
+            }
         }
 
         //password validation
@@ -46,7 +54,15 @@
 
         if( empty($errors) ){
             //form is valid. Proceed 
-            echo "Form submitted successfully!";
+            // echo "Form submitted successfully!";
+            $insertSQL = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+            $preparedstmt = $connection->prepare($insertSQL);
+            $preparedstmt->bind_param("sss", $name, $email, $password);
+            $result = $preparedstmt->execute();
+            if($result)
+                {
+                    header("Location: /login.php");
+                }
         }
     
     }
