@@ -23,7 +23,7 @@
     $searchQuery="J"."%";
     
 
-    $selectSQL="SELECT * FROM users  where fullname LIKE ?";
+    $selectSQL="SELECT * FROM users  where name like ?";
     $preparedstmt=$connection->prepare($selectSQL);
     $preparedstmt->bind_param("s", $searchQuery);
     $preparedstmt->execute();
