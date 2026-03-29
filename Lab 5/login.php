@@ -1,12 +1,10 @@
 <?php
-
+    require_once('./connection.php');
     // handle post request
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
     
         $formData = $_POST;
 
-
-        $registredUser = ['prayag1@gmail.com' => 'prayag123', 'manjil@gmail.com' => 'manjil123','bikash@gmail.com' => 'bikash123'];
 
         $email = trim($formData['email'] ?? '');
         $password = trim($formData['password'] ?? '');
@@ -20,8 +18,16 @@
             $errors['email'] = 'Email is required';
         }else if($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) === false){
             $errors['email'] = 'Invalid email format';
-        }else if($email !== '' && !in_array($email, array_keys($registredUser))){
-            $errors['email'] = 'Email is not registered';
+        }else{
+            $userExistsSQL = "SELECT * FROM users WHERE email = ?";
+            $userExistsStmt = $connection->prepare($userExistsSQL);
+            $userExistsStmt->bind_param("s", $email);
+            $userExistsStmt->execute();
+            $result = $userExistsStmt->get_result();
+
+            if($result->num_rows === 0){
+                $errors['email'] = 'Email is not registered';
+            }
         }
 
         //password validation
@@ -35,7 +41,12 @@
         if( empty($errors) ){
             //form is valid. Proceed 
             // echo "Form submitted successfully!";
-            if($password === $registredUser[$email]){
+            $registredUserSQL = "SELECT * FROM users WHERE email = ? and password = ?";
+            $registredUserStmt = $connection->prepare($registredUserSQL);
+            $registredUserStmt->bind_param("ss", $email, $password);
+            $registredUserStmt->execute();
+            $result = $registredUserStmt->get_result();
+            if($result->num_rows > 0){
                 header('Location: home.php');
             }else{
                 $errors['password'] = 'Incorrect password';
@@ -80,7 +91,7 @@
                     <?= isset($errors['password']) ? $errors['password'] : '' ?>
                 </span>
             </div>
-            <button type="submit" class="registerBtn">Register</button>
+            <button type="submit" class="loginBtn">Login</button>
         </form>
     </div>
 

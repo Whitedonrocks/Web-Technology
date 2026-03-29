@@ -80,7 +80,7 @@
                     <?= isset($errors['password']) ? $errors['password'] : '' ?>
                 </span>
             </div>
-            <button type="submit" class="registerBtn">Register</button>
+            <button type="submit" class="loginBtn">Login</button>
         </form>
     </div>
 
