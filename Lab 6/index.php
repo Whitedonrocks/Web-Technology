@@ -379,7 +379,7 @@
               const itemHTML= `
               <a href="#" class="dropdown-item">
             <div class="item-img-wrap">
-              <img src="${item.image}" alt="${item.name}" class="item-img" />
+              <img src="${item.image_url}" alt="${item.name}" class="item-img" />
             </div>
             <div class="item-info">
               <span class="item-name">${item.name}</span>
